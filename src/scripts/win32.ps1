@@ -119,9 +119,9 @@ Function Add-Tool() {
     } catch { }
   }
   if($tool -eq "phive") {
-    Add-Extension curl >$null 2>&1
-    Add-Extension mbstring >$null 2>&1
-    Add-Extension xml >$null 2>&1
+    Add-Extension curl 
+    Add-Extension mbstring 
+    Add-Extension xml 
   } elseif($tool -eq "cs2pr") {
     (Get-Content $php_dir/cs2pr).replace('exit(9)', 'exit(0)') | Set-Content $php_dir/cs2pr
   } elseif($tool -eq "composer") {
@@ -183,7 +183,7 @@ if($env:PHPTS -ne 'ts') {
 }
 
 Step-Log "Setup PhpManager"
-Install-PhpManager >$null 2>&1
+Install-PhpManager 
 Add-Log $tick "PhpManager" "Installed"
 
 Step-Log "Setup PHP"
@@ -203,7 +203,7 @@ if ($null -eq $installed -or -not("$($installed.Version).".StartsWith(($version 
     $version = 'master'
   }
 
-  Install-Php -Version $version -Architecture $arch -ThreadSafe $ts -InstallVC -Path $php_dir -TimeZone UTC -InitialPhpIni Production -Force >$null 2>&1
+  Install-Php -Version $version -Architecture $arch -ThreadSafe $ts -InstallVC -Path $php_dir -TimeZone UTC -InitialPhpIni Production -Force 
 } else {
   $status = "Found"
 }
