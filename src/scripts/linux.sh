@@ -285,33 +285,12 @@ add_blackfire() {
 
 # Function to setup the nightly build from master branch.
 setup_master() {
-  update_lists && $apt_install libzip-dev libwebp-dev
-  tar_file=php_"$version"%2Bubuntu"$(lsb_release -r -s)".tar.xz
-  install_dir=~/php/"$version"
-  bintray_url=https://dl.bintray.com/shivammathur/php/"$tar_file"
-  sudo mkdir -m 777 -p ~/php
-  if [ ! "$(whoami)" = "runner" ]; then
-    sudo rm -rf /home/runner && sudo ln -sf ~/ /home/runner;
-  fi
-  curl -o /tmp/"$tar_file" -sSL "$bintray_url"
-  sudo tar xf /tmp/"$tar_file" -C ~/php
-  for tool_path in "$install_dir"/bin/*; do
-    tool=$(basename "$tool_path")
-    sudo cp "$tool_path" /usr/bin/"$tool$version"
-    sudo update-alternatives --install /usr/bin/"$tool" "$tool" /usr/bin/"$tool$version" 50
-  done
-  sudo ln -sf "$install_dir"/etc/php.ini /etc/php.ini
+  curl -sSL https://github.com/shivammathur/php-builder/releases/latest/download/install.sh | bash
 }
 
 # Function to setup PHP 5.3, PHP 5.4 and PHP 5.5.
 setup_old_versions() {
-  dir=php-"$version"
-  tar_file="$dir".tar.xz
-  bintray_url=https://dl.bintray.com/shivammathur/php/"$tar_file"
-  curl -o /tmp/"$tar_file" -sSL "$bintray_url"
-  sudo tar xf /tmp/"$tar_file" -C /tmp
-  sudo chmod a+x /tmp/"$dir"/*.sh
-  (cd /tmp/"$dir" && ./install.sh && ./post-install.sh)
+  curl -sSL https://github.com/shivammathur/php5-ubuntu/releases/latest/download/install.sh | bash -s "$version"
   configure_pecl
   release_version=$(php -v | head -n 1 | cut -d' ' -f 2)
 }
@@ -407,7 +386,7 @@ if [ "$existing_version" != "$version" ]; then
       status="Switched to"
     fi
   fi
-  if [ "$version" != "5.3" ]; then
+  if ! [[ "$version" =~ $old_versions ]]; then
     switch_version >/dev/null 2>&1
   fi
 else
